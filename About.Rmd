@@ -1,0 +1,48 @@
+---
+title: "GRÁFICO IPC"
+---
+
+Este gráfico puede acercarlo o alejarlo. Es dinámico:
+
+```{r, echo=F, warnings=F}
+rm(list=ls())
+library("devtools") # To include the session information
+library("rmarkdown") # Make cool dynamic documents
+library("knitr") # Run R Code Chunks
+library("ggplot2") # For plotting
+library("DT") # Interactive HTML tables
+library("plotly")
+library("dplyr")
+library("zoo")
+library('RCurl')
+df<-getURL('https://raw.githubusercontent.com/santiago3305/proesa_data.github.io/master/IPC.csv',
+ssl.verifyhost=F,ssl.verifypeer=F)
+df<-read.csv(textConnection(df), header=T)
+df[is.na(df)] <- " "
+df<-df[df$Anio!="1988",]
+df$Mes<-df$Anio<-NULL
+df$Fecha<-as.POSIXct(strptime(df$Fecha, "%d/%m/%Y"))
+df$Fecha<-as.Date(df$Fecha)
+storeWarn<- getOption("warn")
+ options(warn = -1)
+df_plot<-zoo(df[,-1],order.by=df[,1])
+labels<-format(as.yearmon(df$Fecha),"%Y")
+
+hovertext1 <- paste0("Date:<b>", df$Fecha, "</b><br>",
+                     "From Total:<b>", df$Total, "</b><br>")
+
+hovertext2 <- paste0("Date:<b>", df$Fecha, "</b><br>",
+                     "From Salud:<b>", df$Salud, "</b><br>")
+
+p<-plot_ly(data=df,x=~Fecha) %>%
+  #Time series
+  add_lines(y=~Total,line=list(color="#F08003",width=4),
+  hoverinfo="text",text=hovertext1, name="Total") %>%
+  add_lines(y=~Salud,line=list(color="#045326",width=4),
+  hoverinfo="text",text=hovertext1, name="Salud") %>%
+  layout(xaxis=list(title="Fecha"),yaxis=list(title="IPC"))
+
+```
+```{r IPC, out.width='100%',fig.align="center",echo=F}
+p
+```

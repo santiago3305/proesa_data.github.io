@@ -1,0 +1,16 @@
+name: "Ejemplo con IPC"
+navbar:
+  title: "Ejemplo con IPC"
+  left:
+    - text: "Datos"
+      href: index.html
+    - text: "Gráfico IPC"
+      href: About.html
+output:
+  html_document:
+    theme: cosmo
+    highlight: textmate
+    include:
+      after_body: footer.html
+    css: styles.css
+output_dir: "."

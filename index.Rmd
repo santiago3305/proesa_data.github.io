@@ -1,0 +1,33 @@
+---
+title: "Datos"
+---
+
+Es esta pequeña prueba se muestra  una gráfica dinámica del IPC por categoría de gasto desde 1989 hasta 2018, con periodicidad mensual, además de su respectiva data.
+
+
+La información es la siguiente:
+
+```{r include=FALSE}
+rm(list=ls())
+library("devtools") # To include the session information
+library("rmarkdown") # Make cool dynamic documents
+library("knitr") # Run R Code Chunks
+library("ggplot2") # For plotting
+library("DT") # Interactive HTML tables
+library("plotly")
+library("dplyr")
+library("RCurl")
+library("zoo")
+```
+```{r Datos IPC, echo=F}
+df<-getURL('https://raw.githubusercontent.com/santiago3305/proesa_data.github.io/master/IPC.csv',
+ssl.verifyhost=F,ssl.verifypeer=F)
+df<-read.csv(textConnection(df), header=T)
+df[is.na(df)] <- " "
+df<- df %>% select(Fecha, Total, Salud)
+df %>%
+  DT::datatable(filter = 'top',
+    extensions = 'Buttons',
+    options = list(dom = 'Bfrtip',
+                   buttons = c('excel', "csv")))
+```
